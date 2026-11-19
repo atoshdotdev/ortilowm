@@ -78,9 +78,9 @@ This example customizes spacing and colors, prefers specific displays for worksp
     "layoutHeader": 8,
     "taskbar": 0
   },
-  "focusedWindowBorder": { "enabled": true, "color": "#609BE7", "thickness": 1 },
-  "parentBorder": { "enabled": true, "color": "#EE9A45", "thickness": 2 },
-  "workspaceIndicator": { "light": "#005FB8", "dark": "#60CDFF" },
+  "focusedWindowBorder": { "enabled": true, "color": null, "thickness": 1 },
+  "parentBorder": { "enabled": true, "color": null, "thickness": 2 },
+  "workspaceIndicator": { "light": null, "dark": null },
   "tabIndicator": { "light": null, "dark": null },
   "showTopBar": true,
   "defaultLayout": "ContainerTree",
@@ -103,10 +103,20 @@ This example customizes spacing and colors, prefers specific displays for worksp
 ```
 
 - **Spacing.** Gaps are 0–256 device-independent pixels and default to zero. `inner` separates neighboring tiles, `outer` insets the layout, `topBar` adds space under Tessel’s workspace bar, `layoutHeader` separates a tabbed or stacked header from its windows, and `taskbar` adds space along edges reserved by the Windows taskbar. The outer gap adds to the top bar and taskbar gaps where they meet. Border thickness is 1–16 device-independent pixels. Use `enabled: false` in either border section to hide that border.
-- **Colors.** Use `#RRGGBB` for custom colors. An omitted or `null` indicator color uses the Windows accent for that theme. High contrast uses the system palette.
-- **Monitors.** Choose `All`, `PrimaryOnly`, or `Selected`. List the Windows device names under `selectedDeviceNames` for selected mode. A workspace assignment is a preferred display. Run `Tessel.exe list-monitors` to find the names. Dragging a window onto an unmanaged display releases it from its Tessel workspace. Drag it back onto a managed display to tile it again.
+- **Colors.** Use `#RRGGBB` for custom colors. Omitted or `null` border and indicator colors follow the Windows accent. Set a `#RRGGBB` color to override it. Existing configs keep their explicit colors until you change them to `null`. High contrast uses the system palette.
+- **Monitors.** Choose `All`, `PrimaryOnly`, or `Selected`. In `Selected` mode, `selectedDeviceNames` lists the displays Tessel manages. `workspaceDeviceNames` assigns workspace numbers to preferred managed displays. Multiple workspaces can prefer the same display, which shows one workspace at a time. Dragging a window onto an unmanaged display releases it from its Tessel workspace. Drag it back onto a managed display to tile it again.
 - **Keybindings.** Omitted actions keep their defaults. An array replaces an action’s shortcuts, and `[]` disables it. Each shortcut must be unique, including shortcuts inherited from the defaults. The generated config lists the action names. Numbered actions use names such as `Switch to workspace 3`. Older action IDs such as `focus.left` still work.
 - **Layout.** `defaultLayout` sets the starting layout. Reloading preserves existing workspace layouts. `resizeStep` is the fraction used for keyboard split resizing and must be greater than 0 and at most 0.5. `liveDragPreview` controls whether tiles rearrange during a drag. Set `showTopBar` to `false` to hide Tessel’s workspace bar.
+
+To find display names after a default installation, open PowerShell from any folder and run the following. The `&` operator runs the executable at the quoted path.
+
+```powershell
+& "$env:ProgramFiles\Tessel\Tessel.exe" list-monitors | Out-Host
+```
+
+A display reported as `\\.\DISPLAY1` is written as `"\\\\.\\DISPLAY1"` in JSON because every backslash must be escaped. Use that same JSON string in both monitor settings when selecting a display and assigning workspaces to it.
+
+For a custom installation folder, replace the executable path with the location you chose during setup. You can also open PowerShell in that folder and run `.\Tessel.exe list-monitors | Out-Host`. The command only lists connected displays and marks the primary display. It exits without starting the window manager or changing settings.
 
 From the folder containing the executable, run the following in PowerShell to validate the config and ask the running instance to reload it.
 
