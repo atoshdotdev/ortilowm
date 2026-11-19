@@ -34,6 +34,12 @@ internal static partial class TrayApi
     [LibraryImport("user32.dll", EntryPoint = "LoadIconW")]
     internal static partial nint LoadIcon(nint instance, nint name);
 
+    [LibraryImport("user32.dll", EntryPoint = "LoadImageW")]
+    internal static partial nint LoadImage(nint instance, nint name, uint type, int width, int height, uint flags);
+
+    [LibraryImport("user32.dll")]
+    internal static partial int GetSystemMetrics(int index);
+
     [LibraryImport("user32.dll")]
     internal static partial nint SetCapture(nint window);
 

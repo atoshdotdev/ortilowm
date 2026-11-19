@@ -16,6 +16,7 @@
 
     <PublishAot>true</PublishAot>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>..\..\assets\tessel-logo.ico</ApplicationIcon>
   </PropertyGroup>
 
 </Project>

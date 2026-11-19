@@ -85,7 +85,13 @@ public sealed class NativeTrayIcon : IDisposable
         const uint messageIconTipAndShowTip = 0x00000001 | 0x00000002 | 0x00000004 | 0x00000080;
         data.Flags = messageIconTipAndShowTip;
         data.CallbackMessage = CallbackMessage;
-        data.Icon = TrayApi.LoadIcon(nint.Zero, (nint)32512);
+        const int applicationIcon = 32512;
+        const uint imageIcon = 1, shared = 0x8000;
+        const int smallIconWidth = 49, smallIconHeight = 50;
+        data.Icon = TrayApi.LoadImage(ModuleApi.GetModuleHandle(null), applicationIcon, imageIcon,
+            TrayApi.GetSystemMetrics(smallIconWidth), TrayApi.GetSystemMetrics(smallIconHeight), shared);
+        if (data.Icon == nint.Zero)
+            data.Icon = TrayApi.LoadIcon(nint.Zero, applicationIcon);
         if (data.Icon == nint.Zero)
         {
             Console.Error.WriteLine("Could not load the Tessel notification area icon.");

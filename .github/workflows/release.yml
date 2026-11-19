@@ -38,7 +38,50 @@ jobs:
           $exe = (Resolve-Path 'src/Tessel.App/bin/Release/net10.0-windows/win-x64/publish/Tessel.exe').Path
           dotnet run --project tests/Tessel.Windows.Smoke -c Release -- $exe
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          Compress-Archive -LiteralPath $exe, 'README.md', 'LICENSE' -DestinationPath "Tessel-$env:GITHUB_REF_NAME-win-x64.zip"
+          Compress-Archive -LiteralPath $exe, 'README.md', 'LICENSE', 'assets' -DestinationPath "Tessel-$env:GITHUB_REF_NAME-win-x64.zip"
+      - name: Build installer
+        shell: pwsh
+        run: |
+          $compiler = Get-Command ISCC.exe -ErrorAction SilentlyContinue
+          $iscc = if ($compiler) { $compiler.Source } else { "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" }
+          & $iscc "/DAppVersion=$env:TESSEL_VERSION" "/DReleaseTag=$env:GITHUB_REF_NAME" installer/Tessel.iss
+      - name: Smoke-test installer
+        shell: pwsh
+        run: |
+          $setup = "artifacts\Tessel-$env:GITHUB_REF_NAME-win-x64-setup.exe"
+          $testRoot = Join-Path $env:RUNNER_TEMP ("tessel-install-" + [guid]::NewGuid())
+          $installDir = Join-Path $testRoot 'app'
+          $env:TESSEL_CONFIG = Join-Path $testRoot '.tessel\config.json'
+          $setupArgs = @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', ('/DIR="{0}"' -f $installDir))
+
+          $install = Start-Process -FilePath $setup -ArgumentList $setupArgs -Wait -PassThru -WindowStyle Hidden
+          if ($install.ExitCode -ne 0) { throw "Installer exited with code $($install.ExitCode)." }
+
+          $exe = Join-Path $installDir 'Tessel.exe'
+          $shortcut = Join-Path ([Environment]::GetFolderPath('Programs')) 'Tessel.lnk'
+          if (!(Test-Path -LiteralPath $exe) -or !(Test-Path -LiteralPath $shortcut)) {
+              throw 'Installer did not create the executable and Start menu shortcut.'
+          }
+          $config = Get-Content -LiteralPath $env:TESSEL_CONFIG -Raw | ConvertFrom-Json
+          $config.showTopBar = $false
+          $config | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $env:TESSEL_CONFIG
+          $expected = Get-FileHash -LiteralPath $env:TESSEL_CONFIG
+
+          $reinstall = Start-Process -FilePath $setup -ArgumentList $setupArgs -Wait -PassThru -WindowStyle Hidden
+          if ($reinstall.ExitCode -ne 0) { throw "Reinstall exited with code $($reinstall.ExitCode)." }
+          if ((Get-FileHash -LiteralPath $env:TESSEL_CONFIG).Hash -ne $expected.Hash) {
+              throw 'Reinstall changed the user configuration.'
+          }
+          $check = Start-Process -FilePath $exe -ArgumentList 'check-config' -Wait -PassThru -WindowStyle Hidden
+          if ($check.ExitCode -ne 0) { throw 'Installed Tessel rejected the user configuration.' }
+
+          $uninstall = Start-Process -FilePath (Join-Path $installDir 'unins000.exe') -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART' -Wait -PassThru -WindowStyle Hidden
+          if ($uninstall.ExitCode -ne 0 -or (Test-Path -LiteralPath $exe) -or (Test-Path -LiteralPath $shortcut)) {
+              throw 'Uninstall did not remove Tessel and its Start menu shortcut.'
+          }
+          if ((Get-FileHash -LiteralPath $env:TESSEL_CONFIG).Hash -ne $expected.Hash) {
+              throw 'Uninstall changed the user configuration.'
+          }
       - name: Create draft on GitHub
         shell: pwsh
         env:
@@ -46,4 +89,4 @@ jobs:
         run: |
           $releaseFlags = @('--verify-tag', '--draft', '--generate-notes')
           if ($env:TESSEL_PRERELEASE -eq 'True') { $releaseFlags += '--prerelease' }
-          gh release create $env:GITHUB_REF_NAME "Tessel-$env:GITHUB_REF_NAME-win-x64.zip" @releaseFlags
+          gh release create $env:GITHUB_REF_NAME "artifacts/Tessel-$env:GITHUB_REF_NAME-win-x64-setup.exe" "Tessel-$env:GITHUB_REF_NAME-win-x64.zip" @releaseFlags
