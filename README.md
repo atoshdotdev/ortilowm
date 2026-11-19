@@ -1,4 +1,4 @@
-# <img src="assets/tessel-logo.png" alt="" width="40" height="40" align="center"> Tessel
+# <img src="assets/tessel-logo.png" alt="" width="48" height="48"> Tessel
 
 Tessel is a native tiling window manager for Windows 11. It arranges windows automatically and gives you keyboard and mouse controls for navigating, moving, and resizing them. Its nested split containers and workspaces are inspired by i3 and Sway.
 
@@ -6,6 +6,16 @@ Tessel is a native tiling window manager for Windows 11. It arranges windows aut
 - Show different workspaces across multiple monitors, or limit tiling to selected displays.
 - Drag windows into new positions with a live layout preview, or resize them along a shared split.
 - Customize shortcuts, gaps, focus borders, and selection indicators. The native workspace bar, layout headers, and tray menu follow Windows light, dark, and high-contrast settings.
+
+## Table of contents
+
+- [Getting started](#getting-started)
+  - [Install on Windows 11](#install-on-windows-11)
+  - [Default shortcuts](#default-shortcuts)
+- [Configuration](#configuration)
+- [Troubleshooting and reporting issues](#troubleshooting-and-reporting-issues)
+- [Building and contributing](#building-and-contributing)
+- [License](#license)
 
 ## Getting started
 
