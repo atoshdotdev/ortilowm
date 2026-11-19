@@ -13,8 +13,8 @@ AppVerName=Tessel {#ReleaseTag}
 AppPublisher=Andrej Tosheski
 AppPublisherURL=https://github.com/atoshdotdev/tessel
 AppSupportURL=https://github.com/atoshdotdev/tessel/issues
-DefaultDirName={localappdata}\Programs\Tessel
-PrivilegesRequired=lowest
+DefaultDirName={autopf}\Tessel
+PrivilegesRequired=admin
 ArchitecturesAllowed=x64os
 ArchitecturesInstallIn64BitMode=x64os
 MinVersion=10.0.22000
@@ -33,7 +33,7 @@ Source: "..\src\Tessel.App\bin\Release\net10.0-windows\win-x64\publish\Tessel.ex
 Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{userprograms}\Tessel"; Filename: "{app}\Tessel.exe"
+Name: "{commonprograms}\Tessel"; Filename: "{app}\Tessel.exe"
 
 [Run]
 Filename: "{app}\Tessel.exe"; Description: "Launch Tessel"; Flags: nowait postinstall skipifsilent runasoriginaluser
@@ -47,7 +47,7 @@ begin
     exit;
 
   // Use Tessel's config creation and migration logic on both fresh installs and upgrades.
-  if (not Exec(ExpandConstant('{app}\Tessel.exe'), 'init-config',
+  if (not ExecAsOriginalUser(ExpandConstant('{app}\Tessel.exe'), 'init-config',
     ExpandConstant('{app}'), SW_HIDE, ewWaitUntilTerminated, ResultCode)) or
     (ResultCode <> 0) then
   begin

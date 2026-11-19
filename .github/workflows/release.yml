@@ -58,7 +58,7 @@ jobs:
           if ($install.ExitCode -ne 0) { throw "Installer exited with code $($install.ExitCode)." }
 
           $exe = Join-Path $installDir 'Tessel.exe'
-          $shortcut = Join-Path ([Environment]::GetFolderPath('Programs')) 'Tessel.lnk'
+          $shortcut = Join-Path ([Environment]::GetFolderPath('CommonPrograms')) 'Tessel.lnk'
           if (!(Test-Path -LiteralPath $exe) -or !(Test-Path -LiteralPath $shortcut)) {
               throw 'Installer did not create the executable and Start menu shortcut.'
           }

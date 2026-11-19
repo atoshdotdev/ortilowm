@@ -1,6 +1,4 @@
-# Tessel
-
-<img src="assets/tessel-logo.png" alt="Tessel logo" width="128">
+# <img src="assets/tessel-logo.png" alt="" width="40" height="40" align="center"> Tessel
 
 Tessel is a native tiling window manager for Windows 11. It arranges windows automatically and gives you keyboard and mouse controls for navigating, moving, and resizing them. Its nested split containers and workspaces are inspired by i3 and Sway.
 
@@ -11,11 +9,15 @@ Tessel is a native tiling window manager for Windows 11. It arranges windows aut
 
 ## Getting started
 
-Download the latest **Windows x64** release. Choose the asset ending in `-win-x64-setup.exe` when available. Run it to install Tessel for your Windows account, create the default config if needed, and add **Tessel** to the Start menu. Setup offers to launch Tessel when it finishes. For a portable copy, extract the asset ending in `-win-x64.zip` and run `Tessel.exe`. Both downloads include the .NET runtime. Windows x64 covers 64-bit Intel and AMD PCs. An Arm64 build is possible but has yet to be verified on an Arm64 desktop. [GitHub Releases](https://github.com/atoshdotdev/tessel/releases)
+### Install on Windows 11
+
+Download and run the **Windows x64 installer** ending in `-win-x64-setup.exe`. Setup requests administrator approval and installs Tessel for all users under `C:\Program Files\Tessel` by default. Setup creates the default config if needed, adds **Tessel** to the Start menu, and offers to launch it when finished. [GitHub Releases](https://github.com/atoshdotdev/tessel/releases)
+
+The installer includes the .NET runtime and supports Windows 11 PCs with 64-bit Intel or AMD processors. An Arm64 build is possible but has yet to be verified on an Arm64 desktop.
 
 Tessel starts in the Windows notification area. Open its tray menu, under **Show hidden icons** if needed, to open the config, reload it, reset the layout, or quit.
 
-To update, quit Tessel and run the newer installer or extract the newer portable ZIP. To uninstall the installed copy, use **Settings → Apps → Installed apps → Tessel**. Your config stays in your profile through updates and uninstall.
+To update, quit Tessel and run the newer installer. To uninstall the installed copy, use **Settings → Apps → Installed apps → Tessel**. Your config stays in your profile through updates and uninstall.
 
 ### Default shortcuts
 
@@ -53,7 +55,7 @@ To update, quit Tessel and run the newer installer or extract the newer portable
 
 ## Configuration
 
-Tessel creates `%USERPROFILE%\.tessel\config.json` during setup or on first launch of the portable copy. Use **Open configuration** in the tray menu to edit it. JSON comments and trailing commas are supported. Set the `TESSEL_CONFIG` environment variable before running setup or launching Tessel if you want to use a different file. If you have an older config at `%LOCALAPPDATA%\Tessel\config.json`, Tessel copies it to the default location if the new file does not exist.
+Tessel creates `%USERPROFILE%\.tessel\config.json` during setup for the user who launched it, or on first launch for each additional user. Use **Open configuration** in the tray menu to edit it. JSON comments and trailing commas are supported. Set the `TESSEL_CONFIG` environment variable before running setup or launching Tessel if you want to use a different file. If you have an older config at `%LOCALAPPDATA%\Tessel\config.json`, Tessel copies it to the default location if the new file does not exist.
 
 This example customizes spacing and colors, prefers specific displays for workspaces 1 and 2, and disables the minimize shortcut.
 
