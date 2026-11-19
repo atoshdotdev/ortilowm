@@ -1,0 +1,5 @@
+{
+  "dotnet.defaultSolution": "Tessel.sln",
+  "editor.defaultFormatter": "ms-dotnettools.csharp",
+  "editor.formatOnSave": true
+}

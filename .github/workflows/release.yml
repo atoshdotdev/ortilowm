@@ -1,0 +1,49 @@
+name: Draft Windows release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+      - name: Read release version
+        shell: pwsh
+        run: |
+          if ($env:GITHUB_REF_NAME -cnotmatch '^v(?<version>(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?<preview>-[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?)$') {
+              throw 'Use a version tag such as v0.1.0 or v0.2.0-beta.1.'
+          }
+          "TESSEL_VERSION=$($Matches.version)" >> $env:GITHUB_ENV
+          "TESSEL_PRERELEASE=$([bool]$Matches.preview)" >> $env:GITHUB_ENV
+      - name: Test and publish Native AOT
+        shell: pwsh
+        run: |
+          dotnet test Tessel.sln -c Release
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet publish src/Tessel.App -c Release -r win-x64 "-p:Version=$env:TESSEL_VERSION"
+      - name: Smoke-test and package
+        shell: pwsh
+        run: |
+          $exe = (Resolve-Path 'src/Tessel.App/bin/Release/net10.0-windows/win-x64/publish/Tessel.exe').Path
+          dotnet run --project tests/Tessel.Windows.Smoke -c Release -- $exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Compress-Archive -LiteralPath $exe, 'README.md', 'LICENSE' -DestinationPath "Tessel-$env:GITHUB_REF_NAME-win-x64.zip"
+      - name: Create draft on GitHub
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $releaseFlags = @('--verify-tag', '--draft', '--generate-notes')
+          if ($env:TESSEL_PRERELEASE -eq 'True') { $releaseFlags += '--prerelease' }
+          gh release create $env:GITHUB_REF_NAME "Tessel-$env:GITHUB_REF_NAME-win-x64.zip" @releaseFlags
