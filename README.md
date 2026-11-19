@@ -1,4 +1,4 @@
-# <img src="assets/tessel-logo.png" alt="" width="48" height="48"> Tessel
+# <img src="assets/tessel-logo.png" alt="" width="48" height="48" align="top"> Tessel
 
 Tessel is a native tiling window manager for Windows 11. It arranges windows automatically and gives you keyboard and mouse controls for navigating, moving, and resizing them. Its nested split containers and workspaces are inspired by i3 and Sway.
 
