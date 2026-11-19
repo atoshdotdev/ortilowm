@@ -137,6 +137,17 @@ public sealed class NativeDisplayChangeListener : IDisposable
 
         switch (message)
         {
+            case NativeChrome.ThemeChanged:
+            case NativeChrome.ColorizationChanged:
+            case NativeChrome.SystemColorsChanged:
+                NativeChrome.ThemeChangedFor(hwnd);
+                NativeChrome.QueueLayoutRefresh(hwnd);
+                return nint.Zero;
+
+            case NativeChrome.RefreshLayout:
+                NativeChrome.RequestLayout();
+                return nint.Zero;
+
             case WM_APP_RELOAD_CONFIG:
                 instance.ReloadConfigRequested?.Invoke();
                 return nint.Zero;
@@ -156,6 +167,8 @@ public sealed class NativeDisplayChangeListener : IDisposable
                 );
 
             case WM_SETTINGCHANGE when wParam is 0 or SPI_SETWORKAREA:
+                NativeChrome.ThemeChangedFor(hwnd);
+                NativeChrome.QueueLayoutRefresh(hwnd);
                 instance.QueueWorkAreaRefresh();
                 break;
 

@@ -5,12 +5,20 @@ namespace Tessel.Platform.Windows.Windows;
 public sealed class FocusedWindowBorder : IDisposable
 {
     public bool Enabled { get; set; } = true;
-    public uint Color { get; set; } = 0x00E79B60;
+    public uint? Color { get; set; }
     public int Thickness { get; set; } = 1;
 
     private readonly OutlineOverlay _outline = new();
     private nint _focusedWindow;
     private bool _disposed;
+
+    public FocusedWindowBorder() => NativeChrome.PaletteChanged += Refresh;
+
+    private void Refresh()
+    {
+        if (_focusedWindow != 0)
+            SetFocusedWindow(_focusedWindow);
+    }
 
     public static bool IsInternalWindow(nint handle) => OutlineOverlay.IsInternalWindow(handle);
 
@@ -37,7 +45,7 @@ public sealed class FocusedWindowBorder : IDisposable
 
         _focusedWindow = handle;
         _outline.Show(bounds, NativeChrome.Scale(Thickness, dpi), radius,
-            colors.HighContrast ? colors.Text : Color, handle);
+            colors.HighContrast ? colors.Text : Color ?? colors.Accent, handle);
     }
 
     public void Clear(nint handle)
@@ -57,6 +65,7 @@ public sealed class FocusedWindowBorder : IDisposable
         if (_disposed)
             return;
 
+        NativeChrome.PaletteChanged -= Refresh;
         _outline.Dispose();
         _focusedWindow = nint.Zero;
         _disposed = true;

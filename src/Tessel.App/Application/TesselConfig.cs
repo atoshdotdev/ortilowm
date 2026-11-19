@@ -17,8 +17,8 @@ internal sealed class TesselConfig
         });
 
     public GapConfig Gaps { get; set; } = new();
-    public BorderConfig FocusedWindowBorder { get; set; } = new(true, "#609BE7", 1);
-    public BorderConfig ParentBorder { get; set; } = new(true, "#EE9A45", 2);
+    public BorderConfig FocusedWindowBorder { get; set; } = new(true, null, 1);
+    public BorderConfig ParentBorder { get; set; } = new(true, null, 2);
     public IndicatorColorConfig WorkspaceIndicator { get; set; } = new();
     public IndicatorColorConfig TabIndicator { get; set; } = new();
     public MonitorConfig Monitors { get; set; } = new();
@@ -338,11 +338,11 @@ internal static class ConfigColor
 
 internal sealed record BorderConfig(bool Enabled = true, string? Color = null, int? Thickness = null)
 {
-    internal uint GetColorRef(uint fallback) => ConfigColor.Parse(Color) ?? fallback;
+    internal uint? GetColorRef() => ConfigColor.Parse(Color);
 
     internal void Validate()
     {
-        _ = GetColorRef(0);
+        _ = GetColorRef();
         if (Thickness is < 1 or > 16)
             throw new InvalidDataException("Border thickness must be between 1 and 16.");
     }

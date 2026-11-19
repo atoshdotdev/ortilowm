@@ -58,6 +58,19 @@ internal static class Program
         RunCommand(app, config, "check-config").RequireSuccess();
         string validConfig = File.ReadAllText(config);
         var custom = JsonNode.Parse(validConfig)!.AsObject();
+        Check(custom["focusedWindowBorder"]!["color"] is null &&
+            custom["parentBorder"]!["color"] is null &&
+            custom["workspaceIndicator"]!["light"] is null && custom["workspaceIndicator"]!["dark"] is null &&
+            custom["tabIndicator"]!["light"] is null && custom["tabIndicator"]!["dark"] is null,
+            "Default colors must follow the Windows accent.");
+        custom["focusedWindowBorder"]!.AsObject().Remove("color");
+        custom["parentBorder"]!.AsObject().Remove("color");
+        custom.Remove("workspaceIndicator");
+        custom.Remove("tabIndicator");
+        File.WriteAllText(config, custom.ToJsonString());
+        RunCommand(app, config, "check-config").RequireSuccess();
+        custom["focusedWindowBorder"]!["color"] = "#112233";
+        custom["parentBorder"]!["color"] = "#AABBCC";
         custom["workspaceIndicator"] = new JsonObject { ["light"] = "#005FB8", ["dark"] = "#60CDFF" };
         custom["tabIndicator"] = new JsonObject { ["light"] = "#000000" };
         File.WriteAllText(config, custom.ToJsonString());

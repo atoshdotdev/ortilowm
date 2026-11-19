@@ -44,6 +44,7 @@ public sealed class LayoutCoordinator : IDisposable
 
     internal void Configure(TesselConfig config)
     {
+        NativeTopBar.RefreshColors();
         _gaps = config.Gaps;
         _showTopBar = config.ShowTopBar;
         _workspaceIndicatorColors = config.WorkspaceIndicator.GetColors();
@@ -51,7 +52,7 @@ public sealed class LayoutCoordinator : IDisposable
         _topBarUnavailable = false;
         var border = config.ParentBorder;
         _focusedContainerBorder.Enabled = border.Enabled;
-        _focusedContainerBorder.Color = border.GetColorRef(0x00459AEE);
+        _focusedContainerBorder.Color = border.GetColorRef();
         _focusedContainerBorder.Thickness = border.Thickness ?? 2;
         if (!border.Enabled)
             _focusedContainerBorder.Clear();

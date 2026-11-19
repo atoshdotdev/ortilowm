@@ -8,6 +8,12 @@ namespace Tessel.Platform.Windows.Windows;
 
 public sealed class NativeLayoutHeader
 {
+    internal static void RefreshColors()
+    {
+        foreach (var window in Headers.Keys)
+            NativeChrome.ThemeChangedFor(window);
+    }
+
     private const int RowHeight = 36;
 
     private int _headerHeight = RowHeight;

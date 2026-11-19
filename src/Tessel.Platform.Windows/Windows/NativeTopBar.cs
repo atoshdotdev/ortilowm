@@ -75,6 +75,13 @@ public static class NativeTopBar
     public static uint GetPendingDpi(nint monitorHandle) =>
         Bars.Values.FirstOrDefault(bar => bar.MonitorHandle == monitorHandle)?.PendingDpi ?? 0;
 
+    public static void RefreshColors()
+    {
+        foreach (var window in Bars.Keys)
+            NativeChrome.ThemeChangedFor(window);
+        NativeLayoutHeader.RefreshColors();
+    }
+
     public static void UpdateActiveMonitor(nint monitorHandle)
     {
         foreach (var (window, state) in Bars)

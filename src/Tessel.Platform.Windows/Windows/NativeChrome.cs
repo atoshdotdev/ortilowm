@@ -29,6 +29,7 @@ internal static class NativeChrome
     private static Palette? _palette;
 
     internal static event Action? LayoutInvalidated;
+    internal static event Action? PaletteChanged;
 
     internal readonly record struct Palette(
         uint Background, uint Text, uint SecondaryText, uint Divider, uint Hover,
@@ -53,6 +54,7 @@ internal static class NativeChrome
     {
         _palette = null;
         WindowApi.InvalidateRect(hwnd, nint.Zero, false);
+        PaletteChanged?.Invoke();
     }
 
     internal static uint DpiFromMessage(nuint wParam) => (uint)(wParam & 0xffff);
@@ -245,17 +247,13 @@ internal static class NativeChrome
 
         uint selectedBackground = dark ? 0x00393939u : 0x00FFFFFFu;
         uint accent = dark ? 0x00FFCB60u : 0x00C46700u;
-        if (DwmWindowApi.DwmGetColorizationColor(out uint argb, out _) >= 0)
+        if (WindowsAccent.TryGetColor(out uint userAccent))
+            accent = userAccent;
+        else if (DwmWindowApi.DwmGetColorizationColor(out uint argb, out _) >= 0)
         {
             // DWM supplies ARGB. GDI expects COLORREF (BGR).
             uint systemAccent = ((argb & 0xFF) << 16) | (argb & 0xFF00) | ((argb >> 16) & 0xFF);
-            double foreground = Luminance(systemAccent);
-            double background = Luminance(selectedBackground);
-            if ((Math.Max(foreground, background) + 0.05) /
-                (Math.Min(foreground, background) + 0.05) >= 3)
-            {
-                accent = systemAccent;
-            }
+            accent = systemAccent;
         }
 
         return dark
@@ -263,14 +261,4 @@ internal static class NativeChrome
             : new(0x00FAF6F3, 0x001B1B1B, 0x00565656, 0x00E2DEDA, 0x00F0ECE9, selectedBackground, 0x001B1B1B, accent, false, Transparency: transparency);
     }
 
-    private static double Luminance(uint colorRef) =>
-        0.2126 * LinearChannel(colorRef) +
-        0.7152 * LinearChannel(colorRef >> 8) +
-        0.0722 * LinearChannel(colorRef >> 16);
-
-    private static double LinearChannel(uint color)
-    {
-        double channel = (color & 0xFF) / 255.0;
-        return channel <= 0.04045 ? channel / 12.92 : Math.Pow((channel + 0.055) / 1.055, 2.4);
-    }
 }

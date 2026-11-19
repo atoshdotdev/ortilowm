@@ -64,7 +64,7 @@ public sealed class WindowEventCoordinator : IDisposable
     internal void ConfigureBorder(BorderConfig config)
     {
         _focusedWindowBorder.Enabled = config.Enabled;
-        _focusedWindowBorder.Color = config.GetColorRef(0x00E79B60);
+        _focusedWindowBorder.Color = config.GetColorRef();
         _focusedWindowBorder.Thickness = config.Thickness ?? 1;
         nint foreground = WindowFocuser.GetForegroundHandle();
         OnFocusedWindowChanged(_workspaceManager.GetWorkspaceForWindow(foreground) is null ? null : foreground);
