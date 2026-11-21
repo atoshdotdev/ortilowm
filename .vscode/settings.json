@@ -1,5 +1,5 @@
 {
-  "dotnet.defaultSolution": "Tessel.sln",
+  "dotnet.defaultSolution": "Ortilo.sln",
   "editor.defaultFormatter": "ms-dotnettools.csharp",
   "editor.formatOnSave": true
 }

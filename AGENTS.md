@@ -2,43 +2,43 @@
 
 ## Project overview
 
-Tessel is a native Windows 11 tiling window manager written in C# on
+Ortilo is a native Windows 11 tiling window manager written in C# on
 .NET 10.
 
 The project is organized into three production projects and a test
 project:
 
 ``` text
-Tessel/
+Ortilo/
 ├── src/
-│   ├── Tessel.App/
-│   ├── Tessel.Core/
-│   └── Tessel.Platform.Windows/
+│   ├── Ortilo.App/
+│   ├── Ortilo.Core/
+│   └── Ortilo.Platform.Windows/
 └── tests/
-    └── Tessel.Core.Tests/
+    └── Ortilo.Core.Tests/
 ```
 
 ### Project responsibilities
 
--   **Tessel.Core** contains platform-independent domain models, layout
+-   **Ortilo.Core** contains platform-independent domain models, layout
     algorithms, workspace behavior, and services. Keep it free of Win32
     and Windows-specific dependencies.
--   **Tessel.Platform.Windows** contains Windows-specific functionality,
+-   **Ortilo.Platform.Windows** contains Windows-specific functionality,
     including Win32 interop, window enumeration, hooks, native windows,
     positioning, focus, monitor integration, and drawing.
--   **Tessel.App** is the composition and application layer. It wires
+-   **Ortilo.App** is the composition and application layer. It wires
     dependencies together, handles application-level coordination, and
     translates user commands into domain operations.
--   **Tessel.Core.Tests** contains unit tests for platform-independent
+-   **Ortilo.Core.Tests** contains unit tests for platform-independent
     behavior. Prefer testing domain behavior here without requiring a
     running Windows desktop.
 
 Respect the existing project references:
 
--   `Tessel.Platform.Windows` may reference `Tessel.Core`.
--   `Tessel.App` may reference both `Tessel.Core` and
-    `Tessel.Platform.Windows`.
--   `Tessel.Core` must not reference either outer project.
+-   `Ortilo.Platform.Windows` may reference `Ortilo.Core`.
+-   `Ortilo.App` may reference both `Ortilo.Core` and
+    `Ortilo.Platform.Windows`.
+-   `Ortilo.Core` must not reference either outer project.
 
 ## Instructions for agents
 
@@ -67,11 +67,11 @@ be inferred safely.
 
 ### Separation of concerns
 
--   Keep domain decisions and layout-tree behavior in `Tessel.Core`.
+-   Keep domain decisions and layout-tree behavior in `Ortilo.Core`.
 -   Keep Win32 calls, native handles, hooks, message loops, and native
-    drawing in `Tessel.Platform.Windows`.
+    drawing in `Ortilo.Platform.Windows`.
 -   Keep application orchestration and dependency composition in
-    `Tessel.App`.
+    `Ortilo.App`.
 -   Do not move Windows-specific behavior into Core to make an
     implementation more convenient.
 -   Do not let Core depend on UI, operating-system, or infrastructure
@@ -109,7 +109,7 @@ be inferred safely.
 
 ## Domain and window-manager behavior
 
-Tessel aims to provide behavior comparable to tiling window managers
+Ortilo aims to provide behavior comparable to tiling window managers
 such as i3 and Sway, adapted to native Windows behavior.
 
 ### Workspaces
@@ -231,7 +231,7 @@ The container tree is the primary layout model for tiled windows.
 
 -   Target .NET 10, following the target frameworks already defined by
     the project files.
--   Keep `Tessel.Core` platform-independent and compatible with its
+-   Keep `Ortilo.Core` platform-independent and compatible with its
     existing AOT settings.
 -   Prefer compile-time-known types and source generation.
 -   Avoid reflection-heavy designs, runtime code generation, and dynamic
